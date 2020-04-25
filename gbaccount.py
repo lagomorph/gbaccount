@@ -36,6 +36,8 @@ def validation(dollarHigh, dollarLow, iters):
     val = (dollarHigh + dollarLow) & 0xff
     if val == 0:
         val = 1
+    if iters == 0:
+        iters = 1
 
     for _ in range(iters):
         tmp = (val << 1) & 0xff
@@ -60,6 +62,7 @@ def accountNumber(dollarHigh, val, dollarLow):
         accountBits >>= 3
         account.append(first)
         account.append(second)
+
     return ''.join(map(str, account))
  
 if len(sys.argv) < 3:
