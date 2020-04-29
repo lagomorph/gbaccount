@@ -1,0 +1,20 @@
+Interesting memory locations
+
+$3d: men left
+$3e: backpack power percentage (BCD)
+$51-$53: starting dollar value (BCD)
+$57-$59: current dollar value (BCD)
+$5a-$5b: city energy (BCD with low digits first)
+$5c: car type (0-3)
+$62: number of items currently held
+$69: ghost bait remaining (starts at 5)
+$6a: number of traps
+$6b: number of empty traps
+$6c: if you have the PLCS, this increments with each ghost captured until 10, then traps are used, reset when going back to base
+$6d: bitmap of non-trap items:
+    $1 pk energy detector
+    $2 image intensifier
+    $4 marshmallow sensor
+    $8 ghost bait
+    $20 ghost vacuum
+    $40 portable laser confinement system
