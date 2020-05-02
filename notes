@@ -10,7 +10,8 @@ $62: number of items currently held
 $69: ghost bait remaining (starts at 5)
 $6a: number of traps
 $6b: number of empty traps
-$6c: if you have the PLCS, this increments with each ghost captured until 10, then traps are used, reset when going back to base
+$6c: if you have the PLCS, this increments with each ghost captured until 10,
+    then traps are used, reset when going back to base
 $6d: bitmap of non-trap items:
     $1 pk energy detector
     $2 image intensifier
@@ -18,3 +19,14 @@ $6d: bitmap of non-trap items:
     $8 ghost bait
     $20 ghost vacuum
     $40 portable laser confinement system
+$6e: house we're visiting
+$c8-$db: house statuses starting at the top and working left to right (houses
+    on the left and right edges aren't "live")
+    house high nybble goes through $0-$f over time, when it rolls over the low
+    nybble goes through $4, $c, $f, then back to $0. low nybble of $f shows as
+    red and has ghost. If you get near a house with a low nybble of $c and have
+    the pk energy detector it'll promote to $f (with ghost) and reset the high
+    nybble to 0. If you get near a house with a low nybble of $4 and have the
+    pk energy detector it'll change to $5 while nearby and show as purple. The
+    high nybble is used to index into score table when ghost is captured. The
+    faster it is captured (lower number) the more money is awarded.
