@@ -22,6 +22,60 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 """
 
+"""
+The account number obfuscation algorithm:
+Both the name and the account balance are used to generate the account number.
+Account balances are up to six digits. The lowest two digits are not used and
+treated as zero. The account number is built from three bytes. Two bytes come
+from the four BCD digits of the account balance. The remaining byte is
+computed using the account balance and name. Let's call it a check byte.
+
+Computing the check byte:
+- Add the high and low byte of the account balance ignoring any overflow. If
+the result is zero add one. This will be the initial value of the check byte.
+- Perform an eight bit checksum over the (uppercase) name. If the result is
+zero add one. This will act as an iteration count for the next step.
+- Left shift and xor the current check byte value several times as shown in
+validate(). The next value of the check byte will be the current one rotated
+left with the low bit rotated in from the high bit of the result of the left
+shifts and xors. Repeat this step using the iteration count. The result will
+be the final check byte.
+
+The three bytes used to generate the account number are:
+<BCD balance high> <check byte> <BCD balance low>
+
+Break these bytes into groups of three bits each. Each group of three bits
+will be a digit in the account number. The digits are first grouped into
+pairs and then the list of pairs are reversed to give the correct order
+in the account number.
+
+An example:
+Name: DUCK,DONALD
+Account balance: 250700
+
+The eight bit checksum of DUCK,DONALD is 5. This is the iteration count.
+The initial check byte is $25 + $07 = $2c
+Iterating 5 times we have:
+$2c -->
+  1: $58
+  2: $b0
+  3: $61
+  4: $c3
+  5: $87
+
+So $87 is our check byte
+
+The three bytes used to generate the account number are then:
+$25 $87 $07
+in binary:                           00100101 10000111 00000111
+broken up into groups of three bits: 001 001 011 000 011 100 000 111
+as digits:                           1 1 3 0 3 4 0 7
+grouped into digit pairs:            11 30 34 07
+reversed digit pairs:                07 34 30 11
+
+So the account number is 07343011.
+"""
+
 import sys
 
 def checksum8(name):
