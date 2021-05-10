@@ -36,7 +36,7 @@ the result is zero add one. This will be the initial value of the check byte.
 - Perform an eight bit checksum over the (uppercase) name. If the result is
 zero add one. This will act as an iteration count for the next step.
 - Left shift and xor the current check byte value several times as shown in
-validate(). The next value of the check byte will be the current one rotated
+checkByte(). The next value of the check byte will be the current one rotated
 left with the low bit rotated in from the high bit of the result of the left
 shifts and xors. Repeat this step using the iteration count. The result will
 be the final check byte.
@@ -86,28 +86,28 @@ def checksum8(name):
 
    return sum & 0xff
 
-def validation(dollarHigh, dollarLow, iters):
-    val = (dollarHigh + dollarLow) & 0xff
-    if val == 0:
-        val = 1
+def checkByte(dollarHigh, dollarLow, iters):
+    cb = (dollarHigh + dollarLow) & 0xff
+    if cb == 0:
+        cb = 1
     if iters == 0:
         iters = 1
 
     for _ in range(iters):
-        tmp = (val << 1) & 0xff
-        tmp ^= val
+        tmp = (cb << 1) & 0xff
+        tmp ^= cb
         tmp = (tmp << 1) & 0xff
-        tmp ^= val
+        tmp ^= cb
         tmp = (tmp << 2) & 0xff
-        tmp ^= val
-        val = (val << 1) & 0xff
+        tmp ^= cb
+        cb = (cb << 1) & 0xff
         if tmp & 0x80:
-            val |= 0x01
+            cb |= 0x01
 
-    return val
+    return cb
 
-def accountNumber(dollarHigh, val, dollarLow):
-    accountBits = dollarHigh << 16 | val << 8 | dollarLow
+def accountNumber(dollarHigh, checkByte, dollarLow):
+    accountBits = dollarHigh << 16 | checkByte << 8 | dollarLow
     account = []
     for _ in range(4):
         second = accountBits & 0x07
@@ -128,5 +128,5 @@ dollarHigh = (int(sys.argv[2][0]) - 0) * 16 + int(sys.argv[2][1]) - 0
 dollarLow = (int(sys.argv[2][2]) - 0) * 16 + int(sys.argv[2][3]) - 0
 
 iters = checksum8(name)
-val = validation(dollarHigh, dollarLow, iters)
-print("account number: " + accountNumber(dollarHigh, val, dollarLow))
+cb = checkByte(dollarHigh, dollarLow, iters)
+print("account number: " + accountNumber(dollarHigh, cb, dollarLow))
